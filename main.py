@@ -3,8 +3,15 @@ import struct, re
 
 dm = DataModel()
 ptr = dm.find()
-datamodel = Instance(ptr)
+game = Instance(ptr)
 memory = dm.get_mem()
 
-terrain = datamodel.FindFirstChild("Workspace").FindFirstChild("Terrain").Address
-# unfinished
+players = game.Players
+workspace = game.Workspace
+
+"" now have fun
+# here is how to find a character!
+game.Players.MoonArea3.Character
+humanoid
+game.Players.MoonArea3.Character.Humanoid
+"""
