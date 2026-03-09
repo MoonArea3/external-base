@@ -9,7 +9,8 @@ memory = dm.get_mem()
 players = game.Players
 workspace = game.Workspace
 
-"" now have fun
+"""
+now have fun
 # here is how to find a character!
 game.Players.MoonArea3.Character
 humanoid
