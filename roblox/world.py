@@ -86,7 +86,7 @@ class Instance:
         self.address = address
         self.memory = memory
 
-    def get_children(self):
+    def get_children(self) -> list[Instance]:
         children = []
         parent_address = self.address
         try:
@@ -105,45 +105,45 @@ class Instance:
             return []
 
     @property
-    def Name(self):
+    def Name(self) -> str:
         ptr = self.memory.read_ptr(self.address + offsets["Instance"]["Name"])
         return self.memory.read_string(ptr)
 
     @property
-    def ClassName(self):
+    def ClassName(self) -> str:
         classdescriptor = self.memory.read_ptr(self.address + offsets["Instance"]["ClassDescriptor"])
         classname = self.memory.read_ptr(classdescriptor + offsets["Instance"]["ClassName"])
         return self.memory.read_string(classname)
 
     @property
-    def Address(self):
+    def Address(self) -> int:
         return self.address
 
-    def FindFirstChild(self, name):
+    def FindFirstChild(self, name) -> Instance:
         children = self.get_children()
         for i in children:
             if i.Name == name: return i
         return Instance(0)
 
 
-    def FindFirstChildWhichIsA(self, name):
+    def FindFirstChildWhichIsA(self, name) -> Instance:
         children = self.get_children()
         for i in children:
             if i.ClassName == name: return i
 
     @property
-    def LocalPlayer(self):
-        return Instance(self.get_children()[0]) # its rivals support
+    def LocalPlayer(self) -> Instance:
+        return Instance(self.get_children()[0]).Address # its rivals support
 
     @property
-    def Character(self):
+    def Character(self) -> Instance:
         return Instance(memory.read_ptr(self.address + offsets["Player"]["ModelInstance"]))
     @property
-    def Humanoid(self):
-        return Instance(self.address).FindFirstChildWhichIsA("Humanoid") # humanoid.Name = "67"
+    def Humanoid(self) -> Instance:
+        return Instance(self.address).FindFirstChildWhichIsA("Humanoid") # stop the obfuscation
     
     @property
-    def WalkSpeed(self):
+    def WalkSpeed(self) -> Instance:
         return self.memory.read_float(self.address + offsets["Humanoid"]["WalkSpeed"])
     
     @WalkSpeed.setter
@@ -152,7 +152,7 @@ class Instance:
         self.memory.write_float(self.address + offsets["Humanoid"]["WalkSpeed"], float(val))
 
     @property
-    def JumpPower(self):
+    def JumpPower(self) -> float:
         return self.memory.read_float(self.address + offsets["Humanoid"]["JumpPower"])
     
     @JumpPower.setter
@@ -161,11 +161,11 @@ class Instance:
         self.memory.write_float(self.address + offsets["Humanoid"]["JumpHeight"], float(val))
 
     @property
-    def HealthDisplayDistance(self):
+    def HealthDisplayDistance(self) -> int:
         return int(self.memory.read_float(self.address + offsets["Humanoid"]["HealthDisplayDistance"]))
     
     @HealthDisplayDistance.setter
-    def HealthDisplayDistance(self, val: float):
+    def HealthDisplayDistance(self, val: float) :
         return self.memory.write_float(self.address + offsets["Humanoid"]["HealthDisplayDistance"], float(val))
     
     @property
@@ -217,8 +217,15 @@ class Instance:
 
     @property
     def CFrame(self):
-        primitive = memory.read_ptr(self.address + offsets["BasePart"]["Primitive"])
-        raw = memory.read(primitive + offsets["Primitive"]["CFrame"], 48)
+        primitive = self.address
+        classname = self.ClassName
+        if classname != "Camera":
+            primitive = memory.read_ptr(self.address + offsets["BasePart"]["Primitive"])
+        raw = 0
+        if classname != "Camera":
+            raw = memory.read(primitive + offsets["Primitive"]["CFrame"], 48)
+        else:
+            raw = memory.read(primitive + offsets["Camera"]["CFrame"], 48)
         print(raw)
         return CFrame.from_bytes(raw)
     
