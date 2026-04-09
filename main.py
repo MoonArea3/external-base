@@ -6,13 +6,13 @@ ptr = dm.find()
 game = Instance(ptr)
 memory = dm.get_mem()
 
-players = game.Players
-workspace = game.Workspace
+players = game.FindFirstChild("Players")
+workspace = game.FindFirstChild("Workspace")
 
 """
 now have fun
 # here is how to find a character!
-game.Players.MoonArea3.Character
+players.FindFirstChild("MoonArea3").Character
 humanoid
-game.Players.MoonArea3.Character.Humanoid
+players.FindFirstChild("MoonArea3").Character.Humanoid
 """
